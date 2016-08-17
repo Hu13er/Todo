@@ -45,14 +45,17 @@ func (this *Node) Push(node *Node) *Node{
 	return last
 }
 
-func (this *Node) Pop() (oldFirst *Node, newFirst *Node) {
-	oldFirst = this.First()
+func (this *Node) Pop() (*Node, *Node) {
+	oldFirst := this.First()
 
-	newFirst = oldFirst.Next()
+	newFirst := oldFirst.Next()
+	if newFirst != nil {
+		//oldFirst.Size() == 1
+		newFirst.prev = nil
+	}
 	oldFirst.next = nil
-	newFirst.prev = nil
 
-	return
+	return oldFirst, newFirst
 }
 
 func (this *Node) Size() int {

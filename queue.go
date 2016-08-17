@@ -8,19 +8,18 @@ type Node struct {
 }
 
 func NewNode(value interface{}) *Node {
-	return &Node{next: nil, prev: nil, Value:value}
+	return &Node{next: nil, prev: nil, Value: value}
 }
 
-
-func (this *Node) Next() *Node{
+func (this *Node) Next() *Node {
 	return this.next
 }
 
-func (this *Node) Prev() *Node{
+func (this *Node) Prev() *Node {
 	return this.prev
 }
 
-func (this *Node) Last() *Node{
+func (this *Node) Last() *Node {
 	now := this
 	for now.Next() != nil {
 		now = now.Next()
@@ -28,7 +27,7 @@ func (this *Node) Last() *Node{
 	return now
 }
 
-func (this *Node) First() *Node{
+func (this *Node) First() *Node {
 	now := this
 	for now.Prev() != nil {
 		now = now.Prev()
@@ -36,8 +35,7 @@ func (this *Node) First() *Node{
 	return now
 }
 
-
-func (this *Node) Push(node *Node) *Node{
+func (this *Node) Push(node *Node) *Node {
 	last := this.Last()
 	last.next = node
 	node.prev = last
@@ -72,7 +70,7 @@ func (this *Node) Size() int {
 
 type mapFunc func(interface{}) interface{}
 
-func (this *Node) Map(f mapFunc) *Node{
+func (this *Node) Map(f mapFunc) *Node {
 
 	now := this.First()
 
@@ -87,5 +85,3 @@ func (this *Node) Map(f mapFunc) *Node{
 
 	return this
 }
-
-

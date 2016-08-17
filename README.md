@@ -1,5 +1,10 @@
 `Todo` is a s simple Concurrency package
 
+## Install:
+```bash
+go get -u -v github.com/Hu13er/Todo
+```
+
 ## Sample:
 ```go
 package main
@@ -32,8 +37,6 @@ func main(){
 	todo.Stop()
 
 	fmt.Scanln(&p)
-
-	// todo.Run()
 
 	todo.Run()
 

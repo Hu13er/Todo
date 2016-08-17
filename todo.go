@@ -1,20 +1,20 @@
 package Todo
 
-type nothing struct {}
+type nothing struct{}
+
 var pulse = nothing{}
 
 type Todo struct {
-	firstNode*Node
-	lastNode *Node
+	firstNode *Node
+	lastNode  *Node
 
 	pulse chan nothing
-	stop chan nothing
+	stop  chan nothing
 
 	do func(interface{})
 }
 
-
-func NewTodo(f func(interface{})) *Todo{
+func NewTodo(f func(interface{})) *Todo {
 	return &Todo{firstNode: nil, lastNode: nil, pulse: make(chan nothing), stop: make(chan nothing), do: f}
 }
 
@@ -26,7 +26,7 @@ func (this *Todo) IsEmpty() bool {
 	}
 }
 
-func (this *Todo) Push(something interface{}){
+func (this *Todo) Push(something interface{}) {
 
 	defer this.beat()
 
@@ -40,7 +40,7 @@ func (this *Todo) Push(something interface{}){
 	this.lastNode = this.lastNode.Push(node)
 }
 
-func (this *Todo) beat(){
+func (this *Todo) beat() {
 	select {
 	case this.pulse <- pulse:
 		println("beated")
@@ -49,20 +49,21 @@ func (this *Todo) beat(){
 	}
 }
 
-func (this *Todo) Run(){
+func (this *Todo) Run() {
 	if !this.IsEmpty() {
-		go func(){
+		go func() {
 			this.pulse <- pulse
 		}()
 	}
 	go func() {
-		outer: for {
+	outer:
+		for {
 			println("w8ing")
 			select {
-			case <- this.pulse:
+			case <-this.pulse:
 				for !this.IsEmpty() {
 					select {
-					case <- this.stop:
+					case <-this.stop:
 						break outer
 					default:
 					}
@@ -76,7 +77,7 @@ func (this *Todo) Run(){
 
 					this.do(now.Value)
 				}
-			case <- this.stop:
+			case <-this.stop:
 				break
 			}
 
@@ -84,6 +85,6 @@ func (this *Todo) Run(){
 	}()
 }
 
-func (this *Todo) Stop(){
+func (this *Todo) Stop() {
 	this.stop <- pulse
 }

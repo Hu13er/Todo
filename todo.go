@@ -43,9 +43,7 @@ func (this *Todo) Push(something interface{}) {
 func (this *Todo) beat() {
 	select {
 	case this.pulse <- pulse:
-		println("beated")
 	default:
-		println("default")
 	}
 }
 
@@ -58,7 +56,6 @@ func (this *Todo) Run() {
 	go func() {
 	outer:
 		for {
-			println("w8ing")
 			select {
 			case <-this.pulse:
 				for !this.IsEmpty() {

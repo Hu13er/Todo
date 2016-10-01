@@ -1,5 +1,9 @@
 package Todo
 
+import (
+	"sync"
+)
+
 type nothing struct{}
 
 var pulse = nothing{}
@@ -8,6 +12,7 @@ type Todo struct {
 	firstNode *Node
 	lastNode  *Node
 
+	mutex *sync.Mutex
 	pulse chan nothing
 	stop  chan nothing
 
@@ -15,7 +20,7 @@ type Todo struct {
 }
 
 func NewTodo(f func(interface{})) *Todo {
-	return &Todo{firstNode: nil, lastNode: nil, pulse: make(chan nothing), stop: make(chan nothing), do: f}
+	return &Todo{firstNode: nil, lastNode: nil, mutex: &sync.Mutex{}, pulse: make(chan nothing), stop: make(chan nothing), do: f}
 }
 
 func (this *Todo) IsEmpty() bool {
@@ -29,15 +34,16 @@ func (this *Todo) IsEmpty() bool {
 func (this *Todo) Push(something interface{}) {
 
 	defer this.beat()
+	defer this.mutex.Unlock()
+	this.mutex.Lock()
 
-	node := NewNode(something)
+	node := newNode(something)
 	if this.firstNode == nil && this.lastNode == nil {
 		this.firstNode = node
 		this.lastNode = node
 		return
 	}
-
-	this.lastNode = this.lastNode.Push(node)
+	this.lastNode = this.lastNode.push(node)
 }
 
 func (this *Todo) beat() {
@@ -48,6 +54,8 @@ func (this *Todo) beat() {
 }
 
 func (this *Todo) Run() {
+	locked := true
+	this.mutex.Lock()
 	if !this.IsEmpty() {
 		go func() {
 			this.pulse <- pulse
@@ -56,6 +64,10 @@ func (this *Todo) Run() {
 	go func() {
 	outer:
 		for {
+			if locked {
+				this.mutex.Unlock()
+				locked = false
+			}
 			select {
 			case <-this.pulse:
 				for !this.IsEmpty() {
@@ -64,20 +76,16 @@ func (this *Todo) Run() {
 						break outer
 					default:
 					}
-
-					now, newFirst := this.firstNode.Pop()
+					now, newFirst := this.firstNode.pop()
 					this.firstNode = newFirst
 					if this.firstNode == nil {
 						this.lastNode = nil
-						// this.Size == 0
 					}
-
 					this.do(now.Value)
 				}
 			case <-this.stop:
 				break
 			}
-
 		}
 	}()
 }

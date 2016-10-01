@@ -1,87 +1,63 @@
 package Todo
 
-type Node struct {
-	next *Node
-	prev *Node
+type node struct {
+	next *node
+	prev *node
 
-	Value interface{}
+	value interface{}
 }
 
-func NewNode(value interface{}) *Node {
-	return &Node{next: nil, prev: nil, Value: value}
+func newNode(value interface{}) *Node {
+	return &node{next: nil, prev: nil, value: value}
 }
 
-func (this *Node) Next() *Node {
+func (this *node) next() *node {
 	return this.next
 }
 
-func (this *Node) Prev() *Node {
+func (this *node) prev() *node {
 	return this.prev
 }
 
-func (this *Node) Last() *Node {
+func (this *node) last() *node {
 	now := this
-	for now.Next() != nil {
-		now = now.Next()
+	for now.next() != nil {
+		now = now.next()
 	}
 	return now
 }
 
-func (this *Node) First() *Node {
+func (this *node) first() *node {
 	now := this
-	for now.Prev() != nil {
-		now = now.Prev()
+	for now.prev() != nil {
+		now = now.prev()
 	}
 	return now
 }
 
-func (this *Node) Push(node *Node) *Node {
-	last := this.Last()
+func (this *node) push(node *node) *node {
+	last := this.last()
 	last.next = node
 	node.prev = last
-
 	return last
 }
 
-func (this *Node) Pop() (*Node, *Node) {
-	oldFirst := this.First()
-
-	newFirst := oldFirst.Next()
+func (this *node) pop() (*node, *node) {
+	oldFirst := this.first()
+	newFirst := oldFirst.next()
 	if newFirst != nil {
-		//oldFirst.Size() == 1
 		newFirst.prev = nil
 	}
 	oldFirst.next = nil
-
 	return oldFirst, newFirst
 }
 
-func (this *Node) Size() int {
-	now := this.First()
-
+func (this *node) size() int {
+	now := this.first()
 	outp := 1
-	for now.Next() != nil {
+	for now.next() != nil {
 		outp++
-		now = now.Next()
+		now = now.next()
 	}
-
 	return outp
-}
-
-type mapFunc func(interface{}) interface{}
-
-func (this *Node) Map(f mapFunc) *Node {
-
-	now := this.First()
-
-	for {
-		if now == nil {
-			break
-		}
-
-		now.Value = f(now.Value)
-		now = now.Next()
-	}
-
-	return this
 }

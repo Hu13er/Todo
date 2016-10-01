@@ -7,44 +7,44 @@ type node struct {
 	value interface{}
 }
 
-func newNode(value interface{}) *Node {
+func newNode(value interface{}) *node {
 	return &node{next: nil, prev: nil, value: value}
 }
 
-func (this *node) next() *node {
+func (this *node) nextNode() *node {
 	return this.next
 }
 
-func (this *node) prev() *node {
+func (this *node) prevNode() *node {
 	return this.prev
 }
 
-func (this *node) last() *node {
+func (this *node) lastNode() *node {
 	now := this
-	for now.next() != nil {
-		now = now.next()
+	for now.nextNode() != nil {
+		now = now.nextNode()
 	}
 	return now
 }
 
-func (this *node) first() *node {
+func (this *node) firstNode() *node {
 	now := this
-	for now.prev() != nil {
-		now = now.prev()
+	for now.prevNode() != nil {
+		now = now.prevNode()
 	}
 	return now
 }
 
 func (this *node) push(node *node) *node {
-	last := this.last()
+	last := this.lastNode()
 	last.next = node
 	node.prev = last
 	return last
 }
 
 func (this *node) pop() (*node, *node) {
-	oldFirst := this.first()
-	newFirst := oldFirst.next()
+	oldFirst := this.firstNode()
+	newFirst := oldFirst.nextNode()
 	if newFirst != nil {
 		newFirst.prev = nil
 	}
@@ -53,11 +53,11 @@ func (this *node) pop() (*node, *node) {
 }
 
 func (this *node) size() int {
-	now := this.first()
+	now := this.firstNode()
 	outp := 1
-	for now.next() != nil {
+	for now.nextNode() != nil {
 		outp++
-		now = now.next()
+		now = now.nextNode()
 	}
 	return outp
 }

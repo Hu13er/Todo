@@ -9,8 +9,8 @@ type nothing struct{}
 var pulse = nothing{}
 
 type Todo struct {
-	firstNode *Node
-	lastNode  *Node
+	firstNode *node
+	lastNode  *node
 
 	mutex *sync.Mutex
 	pulse chan nothing
@@ -81,7 +81,7 @@ func (this *Todo) Run() {
 					if this.firstNode == nil {
 						this.lastNode = nil
 					}
-					this.do(now.Value)
+					this.do(now.value)
 				}
 			case <-this.stop:
 				break
